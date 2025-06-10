@@ -1,7 +1,6 @@
 import axios from "axios";
-
-// Simule une "base" utilisateur en mémoire
-globalThis.users = globalThis.users || {};
+import dbConnect from "../../../../lib/mongodb";
+import User from "../../../../models/User";
 
 export default async function handler(req, res) {
   const code = req.query.code;
@@ -10,7 +9,8 @@ export default async function handler(req, res) {
   const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
 
   try {
-    const tokenResponse = await axios.post(
+    // 1. Récupère refresh_token
+    const tokenRes = await axios.post(
       "https://accounts.spotify.com/api/token",
       new URLSearchParams({
         grant_type: "authorization_code",
@@ -19,19 +19,27 @@ export default async function handler(req, res) {
         client_id,
         client_secret,
       }).toString(),
-      {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      }
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
     );
 
-    const { refresh_token } = tokenResponse.data;
+    const { access_token, refresh_token } = tokenRes.data;
 
-    // Crée un "userId" temporaire (ici Date.now, à remplacer par login si tu veux)
-    const userId = Date.now().toString();
-    globalThis.users[userId] = { refresh_token };
+    // 2. Récupère profil utilisateur Spotify
+    const profileRes = await axios.get("https://api.spotify.com/v1/me", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    const spotifyId = profileRes.data.id;
 
-    // Redirige le user sur la page front avec son userId
-    res.redirect(`/?userId=${userId}`);
+    // 3. Connecte-toi à MongoDB et sauvegarde (ou mets à jour) l'utilisateur
+    await dbConnect();
+    await User.findOneAndUpdate(
+      { spotifyId },
+      { refresh_token, updated_at: new Date() },
+      { upsert: true }
+    );
+
+    // 4. Redirige vers la home avec userId dans l'URL
+    res.redirect(`/?userId=${spotifyId}`);
   } catch (err) {
     res.status(400).json({ error: "Callback failed", details: err.message });
   }
