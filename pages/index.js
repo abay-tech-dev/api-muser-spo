@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 export default function Home() {
   const [userId, setUserId] = useState(null);
   const [track, setTrack] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const intervalRef = useRef(null);
 
   // Récupère userId depuis l’URL après callback
@@ -13,33 +13,28 @@ export default function Home() {
     if (id) setUserId(id);
   }, []);
 
-  // Fonction pour fetch le “Now Playing”
-  const fetchTrack = async () => {
-    if (!userId) return;
-    setLoading(true);
-    const res = await fetch(`/api/spotify/current?userId=${userId}`);
-    const data = await res.json();
-    setTrack(data);
-    setLoading(false);
-  };
-
-  // Rafraîchissement temps réel
+  // Auto-refresh toutes les 1 seconde
   useEffect(() => {
     if (!userId) return;
+    const fetchTrack = async () => {
+      setLoading(true);
+      const res = await fetch(`/api/spotify/current?userId=${userId}`);
+      const data = await res.json();
+      setTrack(data);
+      setLoading(false);
+    };
     fetchTrack();
-    // Actualise toutes les 5 secondes
-    intervalRef.current = setInterval(fetchTrack, 5000);
+    intervalRef.current = setInterval(fetchTrack, 1000);
     return () => clearInterval(intervalRef.current);
-    // eslint-disable-next-line
   }, [userId]);
 
-  // Animation “barres audio” façon Spotify
+  // Animation audio bars façon Spotify
   const AudioBars = () => (
-    <div style={{ display: 'flex', alignItems: 'end', height: 18, gap: 2, marginBottom: 18, justifyContent: "center" }}>
-      {[7, 13, 9, 14, 6].map((h, i) => (
+    <div style={{ display: 'flex', alignItems: 'end', height: 18, gap: 2, marginRight: 16 }}>
+      {[8, 14, 10, 16, 9].map((h, i) => (
         <div key={i}
           style={{
-            width: 3,
+            width: 4,
             height: h,
             background: "#1DB954",
             borderRadius: 2,
@@ -49,22 +44,17 @@ export default function Home() {
       ))}
       <style>{`
         @keyframes wave {
-          to { height: 18px }
+          to { height: 20px }
         }
       `}</style>
     </div>
   );
 
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: "radial-gradient(ellipse at 80% 10%,#1DB95433 0%,#191414 80%)",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      fontFamily: "system-ui, sans-serif",
-      padding: 24
-    }}>
-      {!userId ? (
+  if (!userId) {
+    return (
+      <div style={{
+        minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#181818"
+      }}>
         <a href="/api/auth/spotify/login">
           <button style={{
             padding: "1rem 2.5rem",
@@ -73,106 +63,102 @@ export default function Home() {
             color: "#fff",
             border: "none",
             fontWeight: 700,
-            fontSize: "1.4rem",
+            fontSize: "1.2rem",
             boxShadow: "0 2px 16px #1DB95422",
-            transition: "transform .1s",
             cursor: "pointer"
-          }}
-          onMouseDown={e => e.currentTarget.style.transform = "scale(0.97)"}
-          onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
-          >
+          }}>
             <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
-              alt="Spotify logo" width={30} style={{ verticalAlign: "middle", marginRight: 16, filter: "invert(1)" }} />
+              alt="Spotify logo" width={30} style={{ verticalAlign: "middle", marginRight: 14, filter: "invert(1)" }} />
             Connecter Spotify
           </button>
         </a>
-      ) : (
-        <div style={{
-          background: "#181818dd",
-          borderRadius: 24,
-          boxShadow: "0 6px 40px #191414aa",
-          padding: 32,
-          width: "100%",
-          maxWidth: 370,
-          minWidth: 280,
-          margin: "auto",
-          textAlign: "center",
-          color: "#fff",
-          display: "flex", flexDirection: "column", alignItems: "center"
-        }}>
-          <AudioBars />
-          <button
-            onClick={fetchTrack}
-            disabled={loading}
-            style={{
-              marginBottom: 18,
-              padding: "0.65rem 1.2rem",
-              borderRadius: 999,
-              background: "#1DB954",
-              color: "#fff",
-              border: "none",
-              fontWeight: 600,
-              fontSize: "1.1rem",
-              letterSpacing: 0.5,
-              boxShadow: "0 2px 16px #1DB95422",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1,
-              transition: "opacity .2s"
-            }}
-          >{loading ? "Chargement..." : "Rafraîchir"}</button>
+      </div>
+    );
+  }
 
-          {!track?.item ? (
-            <div style={{ color: "#ccc", marginTop: 12, fontStyle: "italic" }}>
-              {loading ? "Chargement..." : "Aucune lecture détectée"}
+  // Barre widget compact
+  return (
+    <div style={{
+      width: "100%",
+      maxWidth: 520,
+      minWidth: 260,
+      margin: "32px auto",
+      background: "#181818dd",
+      borderRadius: 24,
+      boxShadow: "0 3px 28px #19141499",
+      padding: "16px 28px 16px 18px",
+      display: "flex",
+      alignItems: "center",
+      gap: 18,
+      color: "#fff",
+      fontFamily: "system-ui,sans-serif",
+      position: "relative"
+    }}>
+      <AudioBars />
+      {track?.item ? (
+        <>
+          <img
+            src={track.item.album.images[0].url}
+            alt="cover"
+            width={56}
+            height={56}
+            style={{
+              borderRadius: 10,
+              boxShadow: "0 2px 10px #1DB95433, 0 1px 4px #0004",
+              objectFit: "cover",
+              flexShrink: 0
+            }}
+          />
+          <div style={{ flex: 1, overflow: "hidden" }}>
+            <div style={{
+              fontWeight: 700,
+              fontSize: 17,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}>
+              {track.item.name}
             </div>
+            <div style={{
+              color: "#1DB954",
+              fontWeight: 600,
+              fontSize: 15,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}>
+              {track.item.artists.map(a => a.name).join(', ')}
+            </div>
+            <div style={{
+              color: "#aaa",
+              fontSize: 14,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}>
+              {track.item.album.name}
+            </div>
+          </div>
+          {track.item.preview_url ? (
+            <audio
+              controls
+              src={track.item.preview_url}
+              style={{
+                marginLeft: 10,
+                width: 84,
+                minWidth: 60,
+                maxWidth: 110,
+                borderRadius: 6,
+                outline: "none"
+              }}
+            />
           ) : (
-            <div>
-              <img src={track.item.album.images[0].url} alt="album" width={210} height={210}
-                style={{
-                  borderRadius: 16,
-                  boxShadow: "0 2px 30px #1DB95433, 0 1px 4px #0004",
-                  marginBottom: 18
-                }} />
-              <h2 style={{
-                fontSize: 21,
-                fontWeight: 700,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxWidth: 250,
-                margin: "0 auto 4px auto"
-              }}>
-                {track.item.name}
-              </h2>
-              <div style={{
-                color: "#1DB954",
-                fontWeight: 600,
-                fontSize: 17,
-                marginBottom: 4
-              }}>{track.item.artists.map(a => a.name).join(', ')}</div>
-              <div style={{
-                color: "#b6b6b6",
-                fontSize: 15,
-                marginBottom: 12
-              }}>{track.item.album.name}</div>
-              {track.item.preview_url ? (
-                <audio
-                  controls
-                  src={track.item.preview_url}
-                  style={{
-                    marginTop: 12,
-                    width: "92%",
-                    borderRadius: 6,
-                    outline: "none"
-                  }}
-                />
-              ) : (
-                <div style={{ color: "#aaa", marginTop: 12, fontSize: 13 }}>
-                  Pas de preview audio disponible
-                </div>
-              )}
-            </div>
+            <div style={{ color: "#888", fontSize: 12, marginLeft: 10 }}>Pas de preview</div>
           )}
+        </>
+      ) : (
+        <div style={{ color: "#ccc", fontStyle: "italic", flex: 1 }}>
+          {loading ? "Chargement..." : "Aucune lecture détectée"}
         </div>
       )}
     </div>
