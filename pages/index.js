@@ -76,7 +76,7 @@ export default function Home() {
     );
   }
 
-  // Barre widget compact
+  // Barre widget compact, sans preview
   return (
     <div style={{
       width: "100%",
@@ -139,22 +139,6 @@ export default function Home() {
               {track.item.album.name}
             </div>
           </div>
-          {track.item.preview_url ? (
-            <audio
-              controls
-              src={track.item.preview_url}
-              style={{
-                marginLeft: 10,
-                width: 84,
-                minWidth: 60,
-                maxWidth: 110,
-                borderRadius: 6,
-                outline: "none"
-              }}
-            />
-          ) : (
-            <div style={{ color: "#888", fontSize: 12, marginLeft: 10 }}>Pas de preview</div>
-          )}
         </>
       ) : (
         <div style={{ color: "#ccc", fontStyle: "italic", flex: 1 }}>
