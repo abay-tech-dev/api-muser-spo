@@ -108,7 +108,7 @@ export default function Home() {
           backgroundImage: `url(${coverUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "blur(12px)",
+          filter: "blur(25px)",
         }} />
       )}
       {/* NOIR OPACITÉ MOINS FORTE */}
