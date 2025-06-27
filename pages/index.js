@@ -108,7 +108,7 @@ export default function Home() {
           backgroundImage: `url(${coverUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "blur(25px)",
+          filter: "blur(20px)",
         }} />
       )}
       {/* NOIR OPACITÉ MOINS FORTE */}
@@ -217,7 +217,7 @@ export default function Home() {
               }}>
                 {/* BARRE de largeur classique */}
                 <div style={{
-                  width: 350, // largeur fixe (modifie ici pour ajuster la taille)
+                  width: 380, // largeur fixe (modifie ici pour ajuster la taille)
                   height: 8,
                   borderRadius: 4,
                   background: "#b7b7b7",
