@@ -120,7 +120,7 @@ export default function Home() {
         position: "absolute",
         inset: 0,
         zIndex: 2,
-        background: "rgba(0,0,0,0.5)",
+        background: "rgba(0,0,0,0.25)",//opacité 0.25 
       }} />
 
       {/* CONTENU */}
