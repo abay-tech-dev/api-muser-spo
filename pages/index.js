@@ -116,7 +116,7 @@ export default function Home() {
         position: "absolute",
         inset: 0,
         zIndex: 2,
-        background: "rgba(0,0,0,0.05)",
+        background: "rgba(0,0,0,0.2)",
         transition: "background 0.2s"
       }} />
 
