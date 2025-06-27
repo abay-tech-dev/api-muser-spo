@@ -6,14 +6,12 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const intervalRef = useRef(null);
 
-  // Récupère userId depuis l’URL après callback
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("userId");
     if (id) setUserId(id);
   }, []);
 
-  // Auto-refresh toutes les 1 seconde
   useEffect(() => {
     if (!userId) return;
     const fetchTrack = async () => {
@@ -28,7 +26,6 @@ export default function Home() {
     return () => clearInterval(intervalRef.current);
   }, [userId]);
 
-  // Formatage timer (mm:ss)
   const formatTime = (ms) => {
     if (!ms) return "0:00";
     const min = Math.floor(ms / 60000);
@@ -38,7 +35,6 @@ export default function Home() {
     return `${min}:${sec}`;
   };
 
-  // Barres audio animées à gauche
   const AudioBars = () => (
     <div style={{ display: 'flex', alignItems: 'end', height: 38, gap: 6, marginRight: 16 }}>
       {[18, 34, 22, 40, 19].map((h, i) => (
@@ -103,7 +99,7 @@ export default function Home() {
       fontFamily: "'Inter', system-ui, sans-serif",
       color: "#fff",
     }}>
-      {/* BACKGROUND BLUR */}
+      {/* BACKGROUND BLUR accentué */}
       {coverUrl && (
         <div style={{
           position: "absolute",
@@ -112,15 +108,17 @@ export default function Home() {
           backgroundImage: `url(${coverUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "blur(30px)",
+          filter: "blur(48px) brightness(1.12)",
+          transition: "filter 0.2s"
         }} />
       )}
-      {/* NOIR OPACITÉ 50% */}
+      {/* NOIR OPACITÉ MOINS FORTE */}
       <div style={{
         position: "absolute",
         inset: 0,
         zIndex: 2,
-        background: "rgba(0,0,0,0.25)",//opacité 0.25 
+        background: "rgba(0,0,0,0.41)",
+        transition: "background 0.2s"
       }} />
 
       {/* CONTENU */}
@@ -211,25 +209,22 @@ export default function Home() {
               }}>
                 {track.item.album.name}
               </div>
-              {/* PROGRESS BAR + TIMER */}
+              {/* PROGRESS BAR + TIMERS */}
               <div style={{
                 marginTop: 20,
                 display: "flex",
                 alignItems: "center",
-                gap: 14
+                gap: 14,
               }}>
-                {/* TIMER DÉBUT */}
-                <span style={{ fontSize: 15, color: "#b7b7b7", minWidth: 44, textAlign: "right" }}>
-                  {formatTime(track.progress_ms)}
-                </span>
-                {/* BARRE */}
+                {/* BARRE de largeur classique */}
                 <div style={{
-                  flex: 1,
+                  width: 230, // largeur fixe (modifie ici pour ajuster la taille)
                   height: 8,
                   borderRadius: 4,
                   background: "#b7b7b7",
                   overflow: "hidden",
-                  position: "relative"
+                  position: "relative",
+                  flexShrink: 0,
                 }}>
                   <div style={{
                     height: "100%",
@@ -238,9 +233,17 @@ export default function Home() {
                     transition: "width 0.6s cubic-bezier(.45,0,.55,1)"
                   }} />
                 </div>
-                {/* TIMER FIN */}
-                <span style={{ fontSize: 15, color: "#b7b7b7", minWidth: 44 }}>
-                  {formatTime(track.item.duration_ms)}
+                {/* TIMERS DROITE */}
+                <span style={{
+                  fontSize: 17,
+                  color: "#fff",
+                  minWidth: 88,
+                  textAlign: "right",
+                  letterSpacing: "0.5px",
+                  fontVariantNumeric: "tabular-nums",
+                  whiteSpace: "nowrap"
+                }}>
+                  {formatTime(track.progress_ms)}<span style={{color:'#b7b7b7'}}> / </span>{formatTime(track.item.duration_ms)}
                 </span>
               </div>
             </>
