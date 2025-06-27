@@ -217,7 +217,7 @@ export default function Home() {
               }}>
                 {/* BARRE de largeur classique */}
                 <div style={{
-                  width: 230, // largeur fixe (modifie ici pour ajuster la taille)
+                  width: 300, // largeur fixe (modifie ici pour ajuster la taille)
                   height: 8,
                   borderRadius: 4,
                   background: "#b7b7b7",
