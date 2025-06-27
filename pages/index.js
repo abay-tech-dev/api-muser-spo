@@ -108,8 +108,7 @@ export default function Home() {
           backgroundImage: `url(${coverUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "blur(48px) brightness(1.12)",
-          transition: "filter 0.2s"
+          filter: "blur(48px)",
         }} />
       )}
       {/* NOIR OPACITÉ MOINS FORTE */}
@@ -117,7 +116,7 @@ export default function Home() {
         position: "absolute",
         inset: 0,
         zIndex: 2,
-        background: "rgba(0,0,0,0.41)",
+        background: "rgba(0,0,0,0.2)",
         transition: "background 0.2s"
       }} />
 
