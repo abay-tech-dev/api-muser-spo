@@ -82,12 +82,12 @@ export default function Home() {
           flexDirection: "column"
         }}>
           <img
-            src="/logo.png" // <--- Change this path to your real logo!
+            src="C:\Users\antho\OneDrive\Bureau\API-MUSER-SPO" // 
             alt="Company Logo"
             width={96}
             height={96}
             style={{
-              borderRadius: 20,
+              borderRadius: 22,
               boxShadow: "0 2px 16px #1db95444, 0 1px 8px #0006",
               objectFit: "contain",
               background: "#222",
