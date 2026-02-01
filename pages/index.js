@@ -82,7 +82,7 @@ export default function Home() {
           flexDirection: "column"
         }}>
           <img
-            src="C:\Users\antho\OneDrive\Bureau\API-MUSER-SPO\pages" // 
+            src="/logo.png" // 
             alt="Company Logo"
             width={96}
             height={96}
