@@ -87,7 +87,7 @@ export default function Home() {
             width={96}
             height={96}
             style={{
-              borderRadius: 22,
+              borderRadius: 20,
               boxShadow: "0 2px 16px #1db95444, 0 1px 8px #0006",
               objectFit: "contain",
               background: "#222",
