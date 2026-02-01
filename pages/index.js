@@ -101,7 +101,7 @@ export default function Home() {
             textShadow: "0 2px 16px #0008",
             color: "#fff"
           }}>
-            Your Company
+            BIGBRAUZ-LLC-FZ
           </h1>
         </div>
 
